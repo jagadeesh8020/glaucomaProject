@@ -219,13 +219,23 @@ def plot_radar_chart(metrics_dict):
     return fig
 
 def generate_gradcam(model, image, last_conv_layer_name=None):
-    import tensorflow as tf
+    try:
+        import tensorflow as tf
+    except (ImportError, ModuleNotFoundError):
+        print("TensorFlow not available for Grad-CAM")
+        return None
+    
+    if model is None:
+        return None
     
     if last_conv_layer_name is None:
-        for layer in reversed(model.layers):
-            if 'conv' in layer.name.lower():
-                last_conv_layer_name = layer.name
-                break
+        try:
+            for layer in reversed(model.layers):
+                if 'conv' in layer.name.lower():
+                    last_conv_layer_name = layer.name
+                    break
+        except:
+            return None
     
     if last_conv_layer_name is None:
         return None
@@ -256,20 +266,27 @@ def generate_gradcam(model, image, last_conv_layer_name=None):
         return None
 
 def overlay_gradcam(image, heatmap, alpha=0.4):
-    import cv2
+    try:
+        import cv2
+    except (ImportError, ModuleNotFoundError):
+        return image
     
     if heatmap is None:
         return image
     
-    heatmap = cv2.resize(heatmap, (image.shape[1], image.shape[0]))
-    
-    heatmap = np.uint8(255 * heatmap)
-    heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-    heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
-    
-    if image.max() <= 1.0:
-        image = np.uint8(255 * image)
-    
-    superimposed = cv2.addWeighted(image, 1 - alpha, heatmap, alpha, 0)
-    
-    return superimposed
+    try:
+        heatmap = cv2.resize(heatmap, (image.shape[1], image.shape[0]))
+        
+        heatmap = np.uint8(255 * heatmap)
+        heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+        heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
+        
+        if image.max() <= 1.0:
+            image = np.uint8(255 * image)
+        
+        superimposed = cv2.addWeighted(image, 1 - alpha, heatmap, alpha, 0)
+        
+        return superimposed
+    except Exception as e:
+        print(f"Overlay error: {e}")
+        return image

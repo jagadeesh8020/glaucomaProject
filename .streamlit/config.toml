@@ -1,4 +1,18 @@
+[theme]
+primaryColor = "#3b82f6"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f8fafc"
+textColor = "#1e293b"
+font = "sans serif"
+
 [server]
 headless = true
-address = "0.0.0.0"
-port = 5000
+port = 8501
+runOnSave = true
+maxUploadSize = 200
+
+[client]
+toolbarMode = "minimal"
+
+[logger]
+level = "info"
