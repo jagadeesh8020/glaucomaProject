@@ -1,0 +1,73 @@
+🔧 Required Modifications
+1. Classification Type - CRITICAL CHANGE
+❌ Remove: Multi-class classification (normal, early, moderate, severe, critical)
+✅ Change to: Binary classification (Glaucoma vs Normal)
+Reason: Dataset has only 2 folders (glaucoma/normal), not 5 classes
+2. Kagglehub Integration
+❌ Remove: Kagglehub integration
+✅ Change to: Direct folder loading from "Fundus_Scanes_Sorted/Train" and "Fundus_Scanes_Sorted/Validation"
+Reason: Dataset is already downloaded with Train/Validation structure
+3. Train/Validation/Test Split
+❌ Remove: Creating train/validation/test split from scratch
+✅ Change to: Use existing Train folder as-is, split Validation folder into Val (50%) + Test (50%)
+Reason: Dataset already has Train/Validation separation
+4. Severity Levels Approach
+❌ Remove: Direct multi-class prediction of severity levels
+✅ Change to: Derive severity levels from binary prediction confidence scores:
+
+0.0-0.3: Normal
+0.3-0.5: Borderline/Suspect
+0.5-0.7: Early Glaucoma
+0.7-0.85: Moderate Glaucoma
+0.85-0.95: Severe Glaucoma
+0.95-1.0: Critical Glaucoma
+
+5. Model Output Layer
+❌ Remove: Softmax activation with multiple output neurons
+✅ Change to: Sigmoid activation with single output neuron for binary classification
+6. Loss Function
+❌ Remove: Categorical Crossentropy
+✅ Change to: Binary Crossentropy
+7. Data Generator Class Mode
+❌ Remove: class_mode='categorical'
+✅ Change to: class_mode='binary'
+8. Input Size Handling
+⚠️ Modify: Not all models use 224x224
+✅ Add: Model-specific input size dictionary:
+
+InceptionV3, Xception: 299x299
+Others: 224x224
+
+9. Training Workflow
+⚠️ Add: Separate training scripts from Streamlit app:
+
+train_models.py for training (run offline)
+streamlit_app.py only loads pre-trained models
+Reason: Training in Streamlit is impractical and slow
+
+10. Model Loading Optimization
+⚠️ Add: @st.cache_resource decorator for model loading
+Reason: Prevent reloading models on every Streamlit interaction
+11. CDR Estimation Disclaimer
+⚠️ Modify: CDR values are estimates, not actual measurements
+✅ Add: Clear disclaimer that CDR is estimated from confidence, not measured from image
+12. Multi-page Structure
+⚠️ Add: Use Streamlit multi-page app structure instead of single page:
+pages/
+├── 1_🏠_Home.py
+├── 2_🔬_Prediction.py
+├── 3_📊_Comparison.py
+├── 4_📈_Analytics.py
+└── 5_ℹ️_About.py
+Reason: Better UX and organization
+
+✅ Everything Else Looks Good
+
+GlaucoNet custom architecture ✓
+10 pre-trained models ✓
+Two-stage fine-tuning ✓
+Grad-CAM visualization ✓
+Evaluation metrics ✓
+Clinical color scheme ✓
+Medical disclaimers ✓
+Progress bars and risk indicators ✓
